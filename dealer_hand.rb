@@ -1,8 +1,7 @@
 class DealerHand < Hand
-
   attr_reader :type
 
-  def initialize(params)
+  def initialize(_name)
     super
     @type = :dealer
   end

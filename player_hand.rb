@@ -1,10 +1,9 @@
 class PlayerHand < Hand
-
   attr_reader :type, :name
 
-  def initialize(params)
+  def initialize(name)
     super
     @type = :player
-    @name = params[:name]
+    @name = name
   end
 end

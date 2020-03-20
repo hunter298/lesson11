@@ -9,19 +9,18 @@ class Game
     @table = table
   end
 
-  def player_choice
-    puts "What You want to do?"
-    options = case status
-              when 0
-                {1 => :pass, 2 => :take, 3 => :open}
-              when 1
-                {1 => :open}
-              end
-    options.each { |num, opt| puts "#{num}. #{opt.capitalize}" }
-    choice = gets.chomp.to_i
-    options.each { |num, opt| self.send(opt, @player) if num == choice }
+  def player_options
+    case status
+    when 0
+      { 1 => :pass, 2 => :take, 3 => :open }
+    when 1
+      { 1 => :open }
+    end
   end
 
+  def player_choice(choice_number)
+    player_options.each { |num, opt| send(opt, @player) if num == choice_number }
+  end
 
   def dealer_choice
     if @dealer.score < 17 && @dealer.cards.size == 2
@@ -32,32 +31,38 @@ class Game
   end
 
   def pass(who)
-    return "#{who.type.capitalize} passed."
+    "#{who.type.capitalize} passed."
   end
 
   def take(who)
     who.cards << @deck.cards.pop
-    @status = 1 if ( @player.cards.size == 3 )
+    @status = 1 if @player.cards.size == 3
   end
 
-  def open(who)
+  def open(_who)
     @status = 1
   end
 
   def result
-    if (@player.score > @dealer.score || @dealer.score > 21) && @player.score <= 21
-      puts "You win!"
-      @player.bank += @table.bank
-      @bank = 0
-    elsif (@player.score == @dealer.score) || (@player.score >21 && @dealer.score > 21)
-      puts "DRAW!!!"
-      @player.bank += (@table.bank/2)
-      @dealer.bank += (@table.bank/2)
-      @table.bank = 0
+    if (@player.score > @dealer.score || @dealer.busted?) && !@player.busted?
+      win(@player)
+    elsif (@player.score == @dealer.score) || (@player.busted? && @dealer.busted?)
+      spare
     else
-      puts "You Lose!!"
-      @dealer.bank += @table.bank
-      @table.bank = 0
+      win(@dealer)
     end
+  end
+
+  def win(player)
+    player.bank += @table.bank
+    @table.bank = 0
+    "#{player.type.capitalize} wins!"
+  end
+
+  def spare
+    @player.bank += (@table.bank / 2)
+    @dealer.bank += (@table.bank / 2)
+    @table.bank = 0
+    'Draw!'
   end
 end
