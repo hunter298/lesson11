@@ -3,8 +3,8 @@ class Deck
 
   def initialize
     @cards = []
-    %i[h d s c].each do |suit|
-      %w[2 3 4 5 6 7 8 9 10 J Q K A].each { |rank| @cards << Card.new(rank, suit) }
+    Card::SUITS.each do |suit|
+      Card::RANKS.each { |rank| @cards << Card.new(rank, suit) }
     end
   end
 

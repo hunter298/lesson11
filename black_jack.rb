@@ -11,24 +11,25 @@ class BlackJack
     puts 'Welcome to our Casino!!'
     @name = player_input("What's Your name, player?")
     @table = Table.new(@name)
+    @game = Game.new(@table)
   end
 
   def play
     @table.initial_deal
-    game = Game.new(@table)
+    @game.status = 0
     loop do
-      case game.status
+      case @game.status
       when 0
         puts '----------------------'
         show_close
-        game.player_options.each { |num, opt| puts "#{num}. #{opt}" }
-        game.player_choice(player_input.to_i)
-        game.dealer_choice
+        @game.player_options.each { |num, opt| puts "#{num}. #{opt}" }
+        @game.player_choice(player_input.to_i)
+        @game.dealer_choice
       when 1
         puts '----------------------'
         puts 'Game over!'
         show_open
-        puts game.result
+        puts @game.result
         puts "\nDealer's bank: #{@table.dealer.bank}"
         puts "Your bank: #{@table.player.bank}"
         abort unless player_input('Wanna play more? (y/n)') == 'y'
